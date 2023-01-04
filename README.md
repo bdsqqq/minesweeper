@@ -2,6 +2,11 @@
 
 I'll write a better read me at some point, for now this is a glorified TODO list ✌
 
+# logic-overhaul branch goals
+
+- Allow for multiple game instances, each one contained within itself.
+- Prepare for chording
+
 # Roadmap
 
 ## features
