@@ -13,7 +13,7 @@ export default function Home() {
 
   const startNewGame = () => {
     revealedCells.current = [];
-    setBoard(createBoardWithJustNumbers(dimSize, bombNumber));
+    setBoard(createBoardWithJustNumbers(dimSize, dimSize, bombNumber));
     let tempArray = new Array(dimSize * dimSize).fill(false);
     setIsThisCellRevealed(singleToMultiDimentionalArray(tempArray, dimSize));
     close();
