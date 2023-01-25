@@ -2,7 +2,9 @@ const rows = 4;
 const cols = 5;
 const bombs = 2;
 
+import { GearIcon, BookmarkIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
+import { keyframes, styled } from "stitches.config";
 import {
   createBoardWithJustNumbers,
   singleToMultiDimentionalArray,
@@ -111,59 +113,161 @@ export const Game = () => {
         {board &&
           board.map((row, y) =>
             row.map((cell, x) => (
-              <button
-                key={`cell-${x}-${y}`}
-                id={`cell-${x}-${y}`}
-                // onClick={() => {
-                //   console.log("clicked", x, y);
-                //   const newRevealedCells = [...revealedCells];
-                //   newRevealedCells[y][x] = !newRevealedCells[y][x];
-                //   setRevealedCells(newRevealedCells);
-                // }}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                }}
-                // Flags should be on press, things that reveal (reveal, chord) should be on release. This allows for 1.5 clicks where you flag a bomb and chord the numbers around it.
-                onMouseDown={(e) => {
-                  const { buttons, button } = e;
-                  // console.log({ buttons, button });
+              <Box key={`cell-${x}-${y}`}>
+                <Cell
+                  variant={
+                    revealedCells[y][x]
+                      ? "revealed"
+                      : flags[y][x]
+                      ? "flagged"
+                      : "hidden"
+                  }
+                  style={{ WebkitTapHighlightColor: "transparent" }}
+                  id={`cell-${x}-${y}`}
+                  // onClick={() => {
+                  //   console.log("clicked", x, y);
+                  //   const newRevealedCells = [...revealedCells];
+                  //   newRevealedCells[y][x] = !newRevealedCells[y][x];
+                  //   setRevealedCells(newRevealedCells);
+                  // }}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                  }}
+                  // Flags should be on press, things that reveal (reveal, chord) should be on release. This allows for 1.5 clicks where you flag a bomb and chord the numbers around it.
+                  onMouseDown={(e) => {
+                    const { buttons, button } = e;
+                    // console.log({ buttons, button });
 
-                  // TODO: validate behavior with players; doesn't allow flagging if left click is pressed.
-                  if (buttons === 2) {
-                    if (revealedCells[y][x]) return;
-                    // console.log("flag", x, y);
-                    flag(x, y);
-                  }
-                }}
-                onMouseUp={(e) => {
-                  const { buttons, button } = e;
-                  // console.log({ buttons, button });
-                  if (button == 0 && buttons === 2) {
-                    // console.log("chord", x, y);
-                    chord(x, y);
-                  }
-                  if (button == 0 && buttons === 0) {
-                    if (flags[y][x]) return;
-                    // console.log("reveal", x, y);
-                    reveal(x, y);
-                  }
-                }}
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  backgroundColor: revealedCells[y][x]
-                    ? "blueviolet"
-                    : "hotpink",
-                  borderWidth: "2px",
-                  borderStyle: "solid",
-                  borderColor: flags[y][x] ? "blueviolet" : "hotpink",
-                }}
-              >
-                {cell === 9 ? "*" : cell > 0 ? cell : null}
-              </button>
+                    // TODO: validate behavior with players; doesn't allow flagging if left click is pressed.
+                    if (buttons === 2) {
+                      if (revealedCells[y][x]) return;
+                      // console.log("flag", x, y);
+                      flag(x, y);
+                    }
+                  }}
+                  onMouseUp={(e) => {
+                    const { buttons, button } = e;
+                    // console.log({ buttons, button });
+                    if (button == 0 && buttons === 2) {
+                      // console.log("chord", x, y);
+                      chord(x, y);
+                    }
+                    if (button == 0 && buttons === 0) {
+                      if (flags[y][x]) return;
+                      // console.log("reveal", x, y);
+                      reveal(x, y);
+                    }
+                  }}
+                >
+                  {revealedCells[y][x] ? (
+                    cell === 9 ? (
+                      <GearIcon width="30" height="30" />
+                    ) : (
+                      cell > 0 && cell
+                    )
+                  ) : flags[y][x] ? (
+                    <BookmarkIcon width="30" height="30" />
+                  ) : (
+                    " "
+                  )}
+                </Cell>
+              </Box>
             ))
           )}
       </div>
     </>
   );
 };
+
+const Box = styled("div", {
+  position: "relative",
+  zIndex: "1",
+
+  width: "3rem",
+  height: "3rem",
+});
+
+const reveal = keyframes({
+  "0%": {
+    transform: "scale(1)",
+    color: "transparent",
+    backgroundColor: "$primary",
+  },
+  "50%": {
+    transform: "scale(1.2)",
+    color: "transparent",
+    backgroundColor: "$primary",
+  },
+  "100%": { transform: "scale(.9)", color: "$text" },
+});
+
+const Cell = styled("div", {
+  //position and zindex so this is displayed above the grid lines
+  position: "relative",
+  zIndex: "1",
+  border: "2px solid transparent",
+
+  borderRadius: "2px",
+  width: "100%",
+  height: "100%",
+  color: "$text",
+  userSelect: "none",
+
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+
+  "&:focus-visible": {
+    outline: "none",
+    borderColor: "$mauve12",
+    transform: "scale(0.8)",
+  },
+
+  "@motion": {
+    transitionDuration: "150ms",
+    transitionTimingFunction: "cubic-bezier(0.4, 0.14, 0.3, 1)",
+
+    animationTimingFunction: "cubic-bezier(0.4, 0.14, 0.3, 1)",
+  },
+
+  variants: {
+    variant: {
+      revealed: {
+        "@motion": {
+          animation: `${reveal} 170ms`,
+        },
+      },
+      hidden: {
+        cursor: "pointer",
+        transform: "scale(1.1)",
+        borderRadius: "3px",
+        backgroundColor: "$primary",
+
+        "&:focus-visible": {
+          transform: "scale(0.8)",
+          backgroundColor: "$primaryFocus",
+        },
+      },
+      flagged: {
+        transform: "scale(0.8)",
+        backgroundColor: "$flagged",
+        color: "$flagColor",
+      },
+    },
+    bomb: {
+      true: {},
+    },
+  },
+
+  compoundVariants: [
+    {
+      variant: "revealed",
+      bomb: true,
+      css: {
+        transform: "scale(0.8)",
+        backgroundColor: "$bombBackground",
+        borderRadius: "2px",
+      },
+    },
+  ],
+});
