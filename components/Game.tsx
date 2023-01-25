@@ -72,6 +72,7 @@ export const Game = () => {
     const flaggedNeighbors = cells.filter((cell) => flags[cell.y][cell.x]);
 
     if (flaggedNeighbors.length === value) {
+      // TODO: if a flag is misplaced, this reveals a bomb, look into the rules
       cells.forEach((cell) => {
         if (
           !flaggedNeighbors.includes(cell) ||
