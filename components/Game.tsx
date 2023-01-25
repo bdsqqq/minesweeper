@@ -21,6 +21,68 @@ export const Game = () => {
     createMirrorBoard()
   );
 
+  const reveal = (x: number, y: number) => {
+    const temp = [...revealedCells];
+    temp[y][x] = true;
+    setRevealedCells(temp);
+  };
+  const flag = (x: number, y: number) => {
+    const temp = [...flags];
+    temp[y][x] = !temp[y][x];
+    setFlags(temp);
+  };
+
+  const chord = (x: number, y: number) => {
+    // checks around, depress unrevealed squares around;
+
+    const value = board[y][x];
+    console.log(value);
+
+    const cells: { x: number; y: number }[] = [];
+
+    for (let r = -1; r <= 1; r++) {
+      for (let c = -1; c <= 1; c++) {
+        if (r == 0 && c == 0) continue;
+        let checking_row = y + r;
+        let checking_col = x + c;
+
+        if (
+          // checking_row and checking_col are inside the board
+          checking_row < 0 ||
+          checking_row > board.length - 1 ||
+          checking_col < 0 ||
+          checking_col > board[0].length - 1
+        )
+          continue;
+
+        cells.push({
+          x: checking_col,
+          y: checking_row,
+        });
+
+        // document.getElementById(
+        //   `cell-${checking_col}-${checking_row}`
+        // ).style.backgroundColor = "#ccc";
+      }
+    }
+
+    const unrevealedNeighbors = cells.filter(
+      (cell) => !revealedCells[cell.y][cell.x]
+    );
+    const flaggedNeighbors = cells.filter((cell) => flags[cell.y][cell.x]);
+
+    if (flaggedNeighbors.length === value) {
+      cells.forEach((cell) => {
+        if (
+          !flaggedNeighbors.includes(cell) ||
+          !unrevealedNeighbors.includes(cell)
+        ) {
+          reveal(cell.x, cell.y);
+        }
+      });
+    }
+  };
+
   useEffect(() => {
     console.table(board);
   }, [board]);
@@ -38,6 +100,7 @@ export const Game = () => {
       </button>
       <div
         style={{
+          width: "fit-content",
           display: "grid",
           gridTemplateColumns: `repeat(${cols}, 1fr)`,
           gridTemplateRows: `repeat(${rows}, 1fr)`,
@@ -49,6 +112,7 @@ export const Game = () => {
             row.map((cell, x) => (
               <button
                 key={`cell-${x}-${y}`}
+                id={`cell-${x}-${y}`}
                 // onClick={() => {
                 //   console.log("clicked", x, y);
                 //   const newRevealedCells = [...revealedCells];
@@ -65,28 +129,27 @@ export const Game = () => {
 
                   // TODO: validate behavior with players; doesn't allow flagging if left click is pressed.
                   if (buttons === 2) {
-                    console.log("flag", x, y);
-                    const temp = [...flags];
-                    temp[y][x] = true;
-                    setFlags(temp);
+                    if (revealedCells[y][x]) return;
+                    // console.log("flag", x, y);
+                    flag(x, y);
                   }
                 }}
                 onMouseUp={(e) => {
                   const { buttons, button } = e;
                   // console.log({ buttons, button });
                   if (button == 0 && buttons === 2) {
-                    console.log("chord", x, y);
+                    // console.log("chord", x, y);
+                    chord(x, y);
                   }
                   if (button == 0 && buttons === 0) {
-                    console.log("reveal", x, y);
-                    const temp = [...revealedCells];
-                    temp[y][x] = true;
-                    setRevealedCells(temp);
+                    if (flags[y][x]) return;
+                    // console.log("reveal", x, y);
+                    reveal(x, y);
                   }
                 }}
                 style={{
-                  width: "100%",
-                  height: "100%",
+                  width: "50px",
+                  height: "50px",
                   backgroundColor: revealedCells[y][x]
                     ? "blueviolet"
                     : "hotpink",
