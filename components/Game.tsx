@@ -1,6 +1,6 @@
-const rows = 4;
-const cols = 5;
-const bombs = 2;
+const rows = 9;
+const cols = 9;
+const bombs = 10;
 
 import { GearIcon, BookmarkIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
@@ -28,6 +28,67 @@ export const Game = () => {
     temp[y][x] = true;
     setRevealedCells(temp);
   };
+  const recurseReveal = (
+    x: number,
+    y: number,
+    original: { x: number; y: number }
+  ) => {
+    if (revealedCells[y][x]) return;
+
+    // reset distances
+
+    const delayFromDistance = 25;
+    const distanceFromOriginal =
+      Math.abs(x - original.x) * delayFromDistance +
+      Math.abs(y - original.y) * delayFromDistance;
+
+    document.getElementById(
+      `cell-${x}-${y}`
+    ).style.animationDelay = `${distanceFromOriginal}ms`;
+    document.getElementById(
+      `cell-${x}-${y}`
+    ).style.transitionDelay = `${distanceFromOriginal}ms`;
+
+    reveal(x, y);
+
+    if (board[y][x] !== 0) return;
+    for (let r = -1; r <= 1; r++) {
+      for (let c = -1; c <= 1; c++) {
+        if (r == 0 && c == 0) continue;
+        let reveal_row = y + r;
+        let reveal_col = x + c;
+
+        if (
+          // row and col are inside the board
+          reveal_row < 0 ||
+          reveal_row > board.length - 1 ||
+          reveal_col < 0 ||
+          reveal_col > board[0].length - 1
+        )
+          continue;
+
+        recurseReveal(reveal_col, reveal_row, original);
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   // TODO: rewrite this, should keep track of these somewhere, probably a ref; Need to run after the last animation plays. Cancel if there are other reveals.
+
+  //   revealedCells.forEach((row, y) => {
+  //     row.map((cell, x) => {
+  //       if (cell) {
+  //         document.getElementById(
+  //           `cell-${x}-${y}`
+  //         ).style.animationDelay = `0ms`;
+  //         document.getElementById(
+  //           `cell-${x}-${y}`
+  //         ).style.transitionDelay = `0ms`;
+  //       }
+  //     });
+  //   });
+  // }, [revealedCells]);
+
   const flag = (x: number, y: number) => {
     const temp = [...flags];
     temp[y][x] = !temp[y][x];
@@ -80,15 +141,15 @@ export const Game = () => {
           !flaggedNeighbors.includes(cell) ||
           !unrevealedNeighbors.includes(cell)
         ) {
-          reveal(cell.x, cell.y);
+          recurseReveal(cell.x, cell.y, { x, y });
         }
       });
     }
   };
 
-  useEffect(() => {
-    console.table(board);
-  }, [board]);
+  // useEffect(() => {
+  //   console.table(board);
+  // }, [board]);
 
   return (
     <>
@@ -122,7 +183,11 @@ export const Game = () => {
                       ? "flagged"
                       : "hidden"
                   }
-                  style={{ WebkitTapHighlightColor: "transparent" }}
+                  style={{
+                    WebkitTapHighlightColor: "transparent",
+                    animationDelay: "0s",
+                    transitionDelay: "0s",
+                  }}
                   id={`cell-${x}-${y}`}
                   // onClick={() => {
                   //   console.log("clicked", x, y);
@@ -155,7 +220,7 @@ export const Game = () => {
                     if (button == 0 && buttons === 0) {
                       if (flags[y][x]) return;
                       // console.log("reveal", x, y);
-                      reveal(x, y);
+                      recurseReveal(x, y, { x, y });
                     }
                   }}
                 >
@@ -242,6 +307,7 @@ const Cell = styled("div", {
         transform: "scale(1.1)",
         borderRadius: "3px",
         backgroundColor: "$primary",
+        color: "transparent",
 
         "&:focus-visible": {
           transform: "scale(0.8)",
