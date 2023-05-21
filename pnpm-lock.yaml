@@ -4,6 +4,9 @@ dependencies:
   '@modulz/radix-icons':
     specifier: ^4.0.0
     version: 4.0.0(react@18.2.0)
+  '@nanostores/react':
+    specifier: ^0.6.0
+    version: 0.6.0(nanostores@0.8.1)(react@18.2.0)
   '@radix-ui/colors':
     specifier: ^0.1.8
     version: 0.1.8
@@ -37,6 +40,9 @@ dependencies:
   eslint-config-next:
     specifier: ^13.1.1
     version: 13.1.1(eslint@8.41.0)(typescript@4.9.4)
+  nanostores:
+    specifier: ^0.8.1
+    version: 0.8.1
   next:
     specifier: ^13.1.1
     version: 13.1.1(react-dom@18.2.0)(react@18.2.0)
@@ -164,6 +170,17 @@ packages:
     peerDependencies:
       react: ^16.x || ^17.x
     dependencies:
+      react: 18.2.0
+    dev: false
+
+  /@nanostores/react@0.6.0(nanostores@0.8.1)(react@18.2.0):
+    resolution: {integrity: sha512-kDHf4Wm+J82RMXg1ZUbeod8D3yJsf+/cSf7MogTH8kwo2qs7IKKBfVmHHf+fHKQzb0DWR0mpErNs3QCT6OWdOA==}
+    engines: {node: ^16.0.0 || >=18.0.0}
+    peerDependencies:
+      nanostores: ^0.8.0
+      react: '>=18.0.0'
+    dependencies:
+      nanostores: 0.8.1
       react: 18.2.0
     dev: false
 
@@ -2116,6 +2133,11 @@ packages:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+    dev: false
+
+  /nanostores@0.8.1:
+    resolution: {integrity: sha512-1ZCfQtII2XeFDrtqXL2cdQ/diGrLxzRB3YMyQjn8m7GSGQrJfGST2iuqMpWnS/ZlifhtjgR/SX0Jy6Uij6lRLA==}
+    engines: {node: ^16.0.0 || >=18.0.0}
     dev: false
 
   /natural-compare@1.4.0:
