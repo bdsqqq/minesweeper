@@ -12,6 +12,6 @@ const MainMenu = ({ startNewGame }: { startNewGame: () => void }) => {
 
 export default MainMenu;
 
-import { PlayIcon } from "@modulz/radix-icons";
+import { PlayIcon } from "@radix-ui/react-icons";
 import DifficultySelector from "components/DifficultySelector";
 import Button from "./Button";

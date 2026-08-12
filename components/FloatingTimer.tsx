@@ -33,7 +33,7 @@ const Box = styled("div");
 
 export default FloatingTimer;
 
-import { StopwatchIcon } from "@modulz/radix-icons";
+import { StopwatchIcon } from "@radix-ui/react-icons";
 import Timer from "./Timer";
 import { styled } from "../stitches.config";
 import { useTimerVisibilityStore } from "lib/store";
